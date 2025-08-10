@@ -16,8 +16,17 @@ let micMuted = false;
 let camOff = false;
 
 const iceServers = [
-  { urls: ['stun:stun.l.google.com:19302', 'stun:global.stun.twilio.com:3478'] }
-  // Для надёжности в сложных сетях потребуется TURN (например, coturn/Twilio/Nimble).
+  { urls: 'stun:stun.l.google.com:19302' },
+  {
+    urls: [
+      'turn:openrelay.metered.ca:80',
+      'turn:openrelay.metered.ca:443',
+      'turn:openrelay.metered.ca:80?transport=tcp',
+      'turn:openrelay.metered.ca:443?transport=tcp'
+    ],
+    username: 'openrelayproject',
+    credential: 'openrelayproject'
+  }
 ];
 
 async function getMedia() {
