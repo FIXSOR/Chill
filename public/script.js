@@ -15,6 +15,7 @@ let role = null; // 'caller' | 'callee'
 let micMuted = false;
 let camOff = false;
 
+// STUN + бесплатный публичный TURN (для теста)
 const iceServers = [
   { urls: 'stun:stun.l.google.com:19302' },
   {
@@ -40,9 +41,6 @@ function setStatus(s) { statusEl.textContent = `Статус: ${s}`; }
 
 function closePC() {
   if (pc) {
-    pc.ontrack = null;
-    pc.onicecandidate = null;
-    pc.onconnectionstatechange = null;
     try { pc.close(); } catch {}
   }
   pc = null;
@@ -50,20 +48,29 @@ function closePC() {
 
 async function createPC() {
   pc = new RTCPeerConnection({ iceServers });
+
   const stream = await getMedia();
   stream.getTracks().forEach(t => pc.addTrack(t, stream));
+
   pc.ontrack = ev => {
     peerVideo.srcObject = ev.streams[0];
   };
+
   pc.onicecandidate = ev => {
     if (ev.candidate) {
       ws.send(JSON.stringify({ type: 'signal', signal: ev.candidate }));
     }
   };
-  pc.onconnectionstatechange = () => {
-    if (['disconnected', 'failed'].includes(pc.connectionState)) {
+
+  pc.oniceconnectionstatechange = () => {
+    console.log('ICE state:', pc.iceConnectionState);
+    if (['failed', 'disconnected'].includes(pc.iceConnectionState)) {
       setStatus('связь потеряна');
     }
+  };
+
+  pc.onconnectionstatechange = () => {
+    console.log('PeerConnection state:', pc.connectionState);
   };
 }
 
@@ -87,25 +94,25 @@ ws.onmessage = async (e) => {
 
   if (msg.type === 'matched') {
     await onMatched(msg.role);
-  }
-  else if (msg.type === 'partner-left') {
+  } else if (msg.type === 'partner-left') {
     setStatus('собеседник вышел');
     if (peerVideo.srcObject) peerVideo.srcObject = null;
     closePC();
-  }
-  else if (msg.type === 'signal') {
+  } else if (msg.type === 'signal') {
     const sig = msg.signal;
 
-    if (sig.type === 'offer') {
+    if (sig && sig.type === 'offer') {
       if (!pc) await createPC();
       await pc.setRemoteDescription(new RTCSessionDescription(sig));
       const answer = await pc.createAnswer();
       await pc.setLocalDescription(answer);
       ws.send(JSON.stringify({ type: 'signal', signal: answer }));
-    } else if (sig.type === 'answer') {
+    } else if (sig && sig.type === 'answer') {
       await pc.setRemoteDescription(new RTCSessionDescription(sig));
-    } else if (sig.candidate) {
-      try { await pc.addIceCandidate(new RTCIceCandidate(sig)); } catch (err) {
+    } else if (sig && sig.candidate) {
+      try {
+        await pc.addIceCandidate(new RTCIceCandidate(sig));
+      } catch (err) {
         console.warn('ICE add error', err);
       }
     }
