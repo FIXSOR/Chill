@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Chilldoor — BLACKROOM style</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@300;400;600;800&display=swap" rel="stylesheet">
+  <link rel="icon" href="img/B.png">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body class="page">
+  <header class="topbar">
+    <div class="brand">
+      <img src="img/B.png" alt="B" class="logo" />
+      <span>CHILLDOOR</span>
+    </div>
+    <div class="filters">
+      <button class="chip" disabled>All</button>
+      <button class="chip" disabled>Nearby</button>
+      <button class="chip" disabled>18+</button>
+    </div>
+    <div class="status" id="status">Статус: ожидание</div>
+  </header>
+
+  <main class="stage">
+    <section class="pane mypane">
+      <div class="pane-title">Вы</div>
+      <video id="me" autoplay playsinline muted></video>
+    </section>
+    <section class="pane peerpane">
+      <div class="pane-title">Собеседник</div>
+      <video id="peer" autoplay playsinline></video>
+    </section>
+  </main>
+
+  <footer class="controls">
+    <div class="left">
+      <button id="muteBtn" class="ctrl">Mute</button>
+      <button id="camBtn" class="ctrl">Stop Cam</button>
+    </div>
+    <div class="center">
+      <button id="findBtn" class="primary">Start</button>
+      <button id="nextBtn" class="danger">Next</button>
+    </div>
+    <div class="right">
+      <a class="link" href="/privacy" aria-disabled="true">Правила</a>
+    </div>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>

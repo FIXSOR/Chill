@@ -1,0 +1,17 @@
+{
+  "name": "chilldoor-chatroulette",
+  "version": "1.0.0",
+  "description": "Minimal WebRTC chatroulette with WebSocket signaling (Render-ready)",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "postinstall": "echo Done"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "express": "^4.19.2",
+    "ws": "^8.18.0"
+  }
+}
